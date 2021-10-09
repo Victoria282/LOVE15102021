@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/homeContainer"
+    tools:context=".ui.home.HomeFragment">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewActiveAlarm"
+        android:visibility="gone"
+        style="@style/cardViewStyle"
+        app:layout_constraintBottom_toTopOf="@+id/buttonSetAlarm"
+        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.033">
+
+        <TextView
+            android:id="@+id/timeAlarm"
+            style="@style/textViewStyleDark"
+            android:layout_marginLeft="24dp"
+            android:textColor="#1B1B1B" />
+
+        <TextView
+            android:id="@+id/dateAlarm"
+           style="@style/textViewStyleLight"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginRight="100dp" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/statusAlarm"
+            style="@style/switchStyle"/>
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        style="@style/btn"
+        android:id="@+id/buttonSetAlarm"
+        android:drawableLeft="@drawable/ic_time"
+        android:text="@string/button"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

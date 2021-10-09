@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/settingsContainer"
+    tools:context=".ui.settings.SettingsFragment">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewActiveAlarm"
+        style="@style/cardViewStyle"
+        android:visibility="visible"
+        app:layout_constraintHorizontal_bias="0.473"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.033">
+
+        <TextView
+            android:id="@+id/textSettings"
+            style="@style/textViewStyleLight"
+            android:layout_gravity="center_vertical|start"
+            android:layout_marginStart="8dp"
+            android:text="@string/startLightTheme" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchTheme"
+            style="@style/switchStyle"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

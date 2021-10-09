@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Alarm-IT</string>
+    <string name="title_home">Главная</string>
+    <string name="title_settings">Настройки</string>
+    <string name="button">Установить будильник</string>
+    <string name="startLightTheme">Включить светлую тему</string>
+    <string name="Start">Вкл</string>
+    <string name="ChooseYourMusic">Выберите музыку для будильника</string>
+    <string name="SetAnswerTask">Что выведет программа:</string>
+    <string name="hint_edit_text">Ответ</string>
+    <string name="finishAlarm">Выключить будильник</string>
+</resources>

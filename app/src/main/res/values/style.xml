@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="cardViewStyle">
+        <item name="android:layout_width"> match_parent </item>
+        <item name="android:layout_height"> 120dp </item>
+        <item name="android:layout_margin"> 10dp </item>
+        <item name="cardElevation"> 4dp </item>
+        <item name="cardCornerRadius"> 6dp </item>
+    </style>
+    <style name="textViewStyleLight">
+        <item name="android:fontFamily">@font/dosis_light</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">#272727</item>
+    </style>
+    <style name="textViewStyleDark">
+        <item name="android:fontFamily">@font/dosis_bold</item>
+        <item name="android:textSize">50sp</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+    <style name="switchStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
+        <item name="android:layout_marginEnd">8dp</item>
+    </style>
+    <style name="spinnerStyle">
+        <item name="android:fontFamily">@font/dosis_light</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#272727</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="btn">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">70dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="backgroundTint">#0088FF</item>
+        <item name="fontFamily">@font/dosis_bold</item>
+        <item name="android:layout_marginBottom">50dp</item>
+    </style>
+</resources>
