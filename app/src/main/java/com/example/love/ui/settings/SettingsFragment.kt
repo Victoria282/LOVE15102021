@@ -17,8 +17,6 @@ import com.example.love.databinding.FragmentSettingsBinding
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private lateinit var binding: FragmentSettingsBinding
 
-    var theme = false
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

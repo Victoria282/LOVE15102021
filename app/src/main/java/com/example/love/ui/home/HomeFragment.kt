@@ -30,6 +30,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
     // аргумент из настроек
     private val args: HomeFragmentArgs by navArgs()
+    val calendar: Calendar = Calendar.getInstance()
 
     // Дата и время установленного будильника
     var dateAlarm = " "
@@ -39,7 +40,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -97,14 +98,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setAlarmDate() {
-        val calendar = Calendar.getInstance()
         var year = calendar.get(Calendar.YEAR)
         var month = calendar.get(Calendar.MONTH)
         var dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
-
-        context?.let { DatePickerDialog(
-            it, DatePickerDialog.OnDateSetListener { _, y, m, dM ->
+        context?.let { DatePickerDialog(it, DatePickerDialog.OnDateSetListener
+        { _, y, m, dM ->
                 year = y
                 month = m + 1
                 dayOfMonth = dM
@@ -112,10 +111,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 dateAlarm = "$dayOfMonth.$month.$year"
                 // Вызов часов
                 setAlarmTime()
-            }, year, month, dayOfMonth)
+        }, year, month, dayOfMonth)
         }?.show()
-
-        Intent(context, Receiver::class.java)
     }
 
     // Показываем пользователю часы для установки будильника
@@ -130,7 +127,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .build()
 
         picker.addOnPositiveButtonClickListener {
-            val calendar: Calendar = Calendar.getInstance()
             calendar.set(Calendar.SECOND, 0)
             calendar.set(Calendar.MILLISECOND, 0)
             calendar.set(Calendar.MINUTE, picker.minute)
@@ -180,7 +176,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             putBoolean("checked", checked).apply()
             putInt("visibility", visibility).apply()
         }
-        Intent(context, Receiver::class.java)
     }
     // восстанавливаем данные из Preferences (если будильник уже был установлен)
     private fun restoreData(savedTime: String?, savedDate: String?, savedVisibility: Int, savedStatusSwitch: Boolean) {
