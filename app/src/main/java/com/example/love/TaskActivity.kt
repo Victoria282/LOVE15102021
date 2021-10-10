@@ -37,18 +37,20 @@ class TaskActivity : AppCompatActivity() {
 
         binding.buttonOffAlarm.setOnClickListener {
             userAnswer = binding.editTextTextPersonName.text.toString().trim()
-            if(userAnswer == rightAnswer) {
-                // Отправляем broadcastReceiver команду
-                // о выключении будильника и его удалении с экрана
-                Toast.makeText(this, "Good", Toast.LENGTH_SHORT).show()
-            }
-            else if (userAnswer == "") {
-                Toast.makeText(this, "Введите ответ!", Toast.LENGTH_SHORT).show()
-            }
-            else {
-                // Отправляем broadcastReceiver команду
-                // о повторе будильника через 5 минут
-                Toast.makeText(this, "Bad", Toast.LENGTH_SHORT).show()
+            when (userAnswer) {
+                rightAnswer -> {
+                    // Отправляем broadcastReceiver команду
+                    // о выключении будильника и его удалении с экрана
+                    Toast.makeText(this, "Good", Toast.LENGTH_SHORT).show()
+                }
+                "" -> {
+                    Toast.makeText(this, "Введите ответ!", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    // Отправляем broadcastReceiver команду
+                    // о повторе будильника через 5 минут
+                    Toast.makeText(this, "Bad", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

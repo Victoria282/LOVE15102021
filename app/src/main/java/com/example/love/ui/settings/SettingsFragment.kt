@@ -53,7 +53,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     }
 
     private fun save(theme: Boolean) {
-        val sharedPref: SharedPreferences = (context?.getSharedPreferences("sharedPref", Context.MODE_PRIVATE) ?: "empty") as SharedPreferences
+        val sharedPref = (context?.getSharedPreferences("sharedPref", Context.MODE_PRIVATE) ?: "empty") as SharedPreferences
         val editor = sharedPref.edit()
         editor.apply() {
             putBoolean("theme", theme).apply()
@@ -68,8 +68,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private fun setThemeApp(theme: Boolean) {
         if(theme) {
             binding.settingsContainer.setBackgroundResource(R.drawable.light_gradient_theme)
-        }
-        else {
+        } else {
             binding.settingsContainer.setBackgroundResource(R.drawable.dark_gradient_theme)
         }
     }

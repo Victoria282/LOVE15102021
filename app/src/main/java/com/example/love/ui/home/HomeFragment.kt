@@ -30,16 +30,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
     // аргумент из настроек
     private val args: HomeFragmentArgs by navArgs()
-    val calendar: Calendar = Calendar.getInstance()
+    private val calendar: Calendar = Calendar.getInstance()
 
     // Дата и время установленного будильника
     var dateAlarm = " "
     var timeAlarm = " "
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -47,7 +44,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // загрузить настройки уже установленного будильника из Preference
+        // загрузить настройки уже установленного будильника и тему из Preference
         loadSettingsTheme()
         loadAlarm()
         // нажатие на "Установить будильник"
