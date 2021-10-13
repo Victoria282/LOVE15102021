@@ -1,4 +1,4 @@
-package com.example.love.ui.api
+package com.example.love.api
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

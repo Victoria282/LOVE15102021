@@ -27,5 +27,15 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        val resultAlarm = intent.getStringExtra("result")
+        if(resultAlarm != null) {
+            when(resultAlarm) {
+                // Пользователь дал верный ответ => нужно остановить будильник
+                "true" -> System.out.println("Yes")
+                // Пользователь дал неверный ответ => повторить будильник через 5 минут
+                "false" -> System.out.println("No")
+            }
+        }
     }
 }

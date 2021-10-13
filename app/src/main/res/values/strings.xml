@@ -6,7 +6,7 @@
     <string name="startLightTheme">Включить светлую тему</string>
     <string name="Start">Вкл</string>
     <string name="ChooseYourMusic">Выберите музыку для будильника</string>
-    <string name="SetAnswerTask">Что выведет программа:</string>
+    <string name="SetAnswerTask">Что выведет следующий код:</string>
     <string name="hint_edit_text">Ответ</string>
     <string name="finishAlarm">Выключить будильник</string>
 </resources>

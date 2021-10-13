@@ -1,8 +1,8 @@
 package com.example.love.view_model
 
 import androidx.lifecycle.*
-import com.example.love.ui.api.ApiHelper
-import com.example.love.ui.api.RetrofitBuilder
+import com.example.love.api.ApiHelper
+import com.example.love.api.RetrofitBuilder
 import kotlinx.coroutines.Dispatchers
 import com.example.love.repository.MainRepository
 import ru.unit6.course.android.retrofit.data.utils.Resource.Companion.error

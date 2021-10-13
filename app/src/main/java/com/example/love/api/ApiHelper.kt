@@ -1,4 +1,4 @@
-package com.example.love.ui.api
+package com.example.love.api
 
 class ApiHelper(private val apiService: ApiService) {
     suspend fun getTask(taskId: String) = apiService.getTask(taskId)

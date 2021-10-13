@@ -1,4 +1,4 @@
-package com.example.love.ui.api
+package com.example.love.api
 
 import com.example.love.model.Task
 import retrofit2.http.*
