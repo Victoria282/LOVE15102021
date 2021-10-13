@@ -18,10 +18,10 @@ class TaskActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
 
     // Разрешено 2 попытки
-    var countOfAnswer: Int = 2
+    private var countOfAnswer: Int = 2
 
-    var rightAnswer: String = ""
-    var userAnswer: String = ""
+    private var rightAnswer: String = ""
+    private var userAnswer: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
