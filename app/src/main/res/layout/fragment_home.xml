@@ -35,6 +35,7 @@
     </androidx.cardview.widget.CardView>
 
     <Button
+        android:backgroundTint="#2C2C2C"
         style="@style/btn"
         android:id="@+id/buttonSetAlarm"
         android:drawableLeft="@drawable/ic_time"

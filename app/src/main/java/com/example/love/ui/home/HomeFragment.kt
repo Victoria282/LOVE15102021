@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import com.example.love.BroadcastReceiver.Receiver
 import com.example.love.R
 import com.example.love.TaskActivity
 import com.example.love.databinding.FragmentHomeBinding
@@ -74,10 +75,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val builder = AlertDialog.Builder(context)
         with(builder) {
             setTitle("Удалить будильник")
-            setIcon(R.drawable.half_moon)
+            setIcon(R.drawable.ic_nights_stay_dark)
             setMessage("Вы уверены?")
             setPositiveButton("Да"){ dialog, which ->
                 // удаляем
+                Receiver()?.cancelAlarm(context)
                 save("", "", false, -1)
                 binding.cardViewActiveAlarm.visibility = View.GONE
             }
@@ -107,7 +109,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }?.show()
     }
 
-    // Показываем пользователю часы для установки будильника
     private fun  setAlarmTime() {
         val picker = MaterialTimePicker
             .Builder()
@@ -124,16 +125,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             calendar.set(Calendar.MINUTE, picker.minute)
             calendar.set(Calendar.HOUR_OF_DAY, picker.hour)
 
-           // val intent = Intent(context, Receiver::class.java)
-
-            val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(calendar.timeInMillis, getAlarmInfoPendingIntent()), getAlarmInfoPendingIntent())
-
-            val timeAlarmFormat = SimpleDateFormat("HH:mm")
-            val resultTime: String = timeAlarmFormat.format(calendar.time).toString()
-            timeAlarm = resultTime
+            val resultTime: String = SimpleDateFormat("HH:mm").format(calendar.time).toString()
+            Receiver()?.setAlarm(calendar.timeInMillis, context)
             // Устанавливаем дату и время на экране приложения
-            setAlarmCard(dateAlarm, timeAlarm)
+            setAlarmCard(dateAlarm, resultTime)
         }
         fragmentManager?.let { it1 -> picker.show(it1, "tag") }
     }
@@ -208,9 +203,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setThemeApp(theme: Boolean) {
         if(theme) {
-            binding.homeContainer.setBackgroundResource(R.drawable.light_gradient_theme)
+            binding.homeContainer.setBackgroundResource(R.drawable.light)
         } else {
-            binding.homeContainer.setBackgroundResource(R.drawable.dark_gradient_theme)
+            binding.homeContainer.setBackgroundResource(R.drawable.dark)
         }
     }
 

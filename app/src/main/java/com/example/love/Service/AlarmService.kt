@@ -56,7 +56,7 @@ class AlarmService: Service() {
         val notification = Notification.Builder (this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("IT Alarm")
             .setContentText("Просыпайся!")
-            .setSmallIcon(R.drawable.half_moon)
+            .setSmallIcon(R.drawable.ic_nights_stay)
             .setContentIntent(pendingIntent)
             .setChannelId("1")
             .build()

@@ -67,9 +67,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
 
     private fun setThemeApp(theme: Boolean) {
         if(theme) {
-            binding.settingsContainer.setBackgroundResource(R.drawable.light_gradient_theme)
+            binding.settingsContainer.setBackgroundResource(R.drawable.light)
         } else {
-            binding.settingsContainer.setBackgroundResource(R.drawable.dark_gradient_theme)
+            binding.settingsContainer.setBackgroundResource(R.drawable.dark)
         }
     }
 

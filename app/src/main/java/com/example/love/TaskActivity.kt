@@ -4,11 +4,14 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import com.example.love.BroadcastReceiver.Receiver
 import com.example.love.databinding.ActivityTaskBinding
 import com.example.love.Service.AlarmService
+import com.example.love.model.TaskDB
 import com.example.love.ui.home.HomeFragment
 import com.example.love.view_model.MainViewModel
 import ru.unit6.course.android.retrofit.utils.Status
@@ -39,14 +42,13 @@ class TaskActivity : AppCompatActivity() {
             countOfAnswer--
             when (userAnswer) {
                 rightAnswer -> {
-                    // Отправляем broadcastReceiver команду
-                    // о выключении будильника и его удалении с экрана
                     stopService(Intent(this, AlarmService::class.java))
                     Toast.makeText(this, "Отлично!", Toast.LENGTH_SHORT).show()
                     val nextActivityMain = Intent(this, MainActivity::class.java)
                     // пользователь ответил верно -> посылаем ответ в MainActivity об отключении будильника
                     nextActivityMain.putExtra("result", "true")
                     startActivity(nextActivityMain)
+                    Receiver()?.cancelAlarm(this)
                 }
                 "" -> {
                     Toast.makeText(this, "Введите ответ!", Toast.LENGTH_SHORT).show()
@@ -60,6 +62,8 @@ class TaskActivity : AppCompatActivity() {
                         Toast.makeText(this, "Не верно, попробуйте ещё!", Toast.LENGTH_SHORT).show()
                     }
                     else {
+                        countOfAnswer = 2
+                        Receiver()?.repeatAlarm(this)
                         stopService(Intent(this, AlarmService::class.java))
                         Toast.makeText(this, "Плохо..", Toast.LENGTH_SHORT).show()
                         val nextActivityMain = Intent(this, MainActivity::class.java)
@@ -95,7 +99,7 @@ class TaskActivity : AppCompatActivity() {
 
     private fun setupObservers() {
         // Подключение к сети и запись в бд затем вызов функции с выводом данных
-        viewModel.getTasks("2").observe(this){ resource ->
+       /* viewModel.getTasks("2").observe(this){ resource ->
             when (resource.status) {
                 Status.SUCCESS -> {
                     resource.data?.let { task ->
@@ -107,6 +111,33 @@ class TaskActivity : AppCompatActivity() {
                     binding.textView.text = "Ошибка"
                 }
             }
+        }*/
+        viewModel.getAllTasks().observe(this) { resource ->
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    resource.data?.let { task ->
+                        //adapter.addUsers(users)
+                        viewModel.setAllTasksToDatabase(
+                            tasks = task.map { task ->
+                                // запись в БД
+                                TaskDB(
+                                    id = task.id,
+                                    task = task.task,
+                                    answer = task.answer
+                                )
+                            }
+                        )
+                    }
+                }
+                Status.ERROR -> {
+
+                }
+            }
+        }
+        val randIndexTask = (1..4).random() - 1
+        viewModel.localTasks.observe(this)  { it ->
+            binding.textView.text = it[randIndexTask].task
+            rightAnswer = it[randIndexTask].answer
         }
     }
 
