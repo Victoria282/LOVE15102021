@@ -4,6 +4,9 @@ import android.app.*
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.*
+import android.view.Window
+import android.view.WindowManager
+import com.example.love.Constants.CHANELL_ID
 import com.example.love.Constants.FOREGROUND_ID
 import com.example.love.Constants.NOTIFICATION_CHANNEL_ID
 import com.example.love.Constants.NOTIFICATION_ID
@@ -12,7 +15,6 @@ import com.example.love.R
 import com.example.love.TaskActivity
 import okhttp3.internal.wait
 
-// Сервис для проигрывания музыки и вибрации при включении будильника
 class AlarmService: Service() {
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
@@ -29,7 +31,6 @@ class AlarmService: Service() {
         createNotificationChannel()
     }
 
-    // Запуск при нажатии на кнопку "старт"
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
         mediaPlayer?.isLooping
@@ -39,33 +40,30 @@ class AlarmService: Service() {
     }
 
     private fun createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val serviceChannel = NotificationChannel(
-                NOTIFICATION_ID,
-                NOTIFICATION_CHANNEL_ID,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(serviceChannel)
-        }
+        val serviceChannel = NotificationChannel(
+            NOTIFICATION_ID,
+            NOTIFICATION_CHANNEL_ID,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        val manager = getSystemService(NotificationManager::class.java)
+        manager.createNotificationChannel(serviceChannel)
     }
 
     private fun showNotification() {
         val notificationIntent = Intent(this, TaskActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 0)
+        val pendingIntent = PendingIntent.getActivity(this, 1, notificationIntent, 0)
         val notification = Notification.Builder (this, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("IT Alarm")
             .setContentText("Просыпайся!")
             .setSmallIcon(R.drawable.ic_nights_stay)
             .setContentIntent(pendingIntent)
-            .setChannelId("1")
+            .setChannelId(CHANELL_ID)
             .build()
         startForeground(FOREGROUND_ID, notification)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        // остановка музыки и вибрации
         mediaPlayer?.stop()
         vibrator?.cancel()
     }

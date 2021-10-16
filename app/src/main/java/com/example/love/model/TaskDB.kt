@@ -9,10 +9,8 @@ import androidx.room.PrimaryKey
 data class TaskDB(
     @PrimaryKey
     val id:String,
-
-    @ColumnInfo(name="task")
+    @ColumnInfo(name = "task")
     val task:String,
-
     @ColumnInfo(name = "answer")
     val answer:String
 )

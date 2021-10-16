@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.example.love.BroadcastReceiver.Receiver
@@ -70,6 +71,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+    }
+
     // Диалог удаления будильника
     private fun setDialogDeleteAlarm() {
         val builder = AlertDialog.Builder(context)
@@ -126,18 +131,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             calendar.set(Calendar.HOUR_OF_DAY, picker.hour)
 
             val resultTime: String = SimpleDateFormat("HH:mm").format(calendar.time).toString()
-            Receiver()?.setAlarm(calendar.timeInMillis, context)
+            Receiver().setAlarm(calendar.timeInMillis, context)
+            System.out.println("VIKA $calendar.timeInMillis")
             // Устанавливаем дату и время на экране приложения
             setAlarmCard(dateAlarm, resultTime)
         }
         fragmentManager?.let { it1 -> picker.show(it1, "tag") }
-    }
-
-    // переход в окно Задачи при запуске будильника
-    private fun getAlarmInfoPendingIntent(): PendingIntent {
-        val intent = Intent(context, TaskActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        return PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
     // Показываем карточку пользователю с установленным временем и датой для будильника

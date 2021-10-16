@@ -1,5 +1,7 @@
 package com.example.love
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +11,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.love.database.AppDatabase
 import com.example.love.databinding.ActivityMainBinding
+import android.os.PowerManager
+
+import android.os.PowerManager.WakeLock
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,8 +36,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        // БД создана
-        AppDatabase.invoke(applicationContext)
 
+        AppDatabase.invoke(applicationContext)
     }
 }

@@ -21,20 +21,17 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // загружаем выбор темы
         loadSettings()
-
-        binding.switchTheme.setOnCheckedChangeListener { compoundButton, isChecked ->
+        binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
             binding.switchTheme.isChecked = isChecked
             setSettings(binding.switchTheme.isChecked)
-
             val action = SettingsFragmentDirections.toHome(binding.switchTheme.isChecked.toString())
             findNavController().navigate(action)
         }
