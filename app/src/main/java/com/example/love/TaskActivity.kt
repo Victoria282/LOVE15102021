@@ -1,9 +1,15 @@
 package com.example.love
 
 import android.app.ActivityManager
+import android.app.KeyguardManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
+import android.media.AudioManager
+import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
+import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,6 +25,8 @@ class TaskActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTaskBinding
     private lateinit var viewModel: MainViewModel
 
+    private val randIndexTask = (1..4).random() - 1
+
     private var countOfAnswer: Int = 2
 
     private var rightAnswer: String = ""
@@ -29,6 +37,32 @@ class TaskActivity : AppCompatActivity() {
 
         binding = ActivityTaskBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+            val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+            keyguardManager.requestDismissKeyguard(this, null)
+        } else window.addFlags(
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+                    WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+                    WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+        )
+
+        window.setBackgroundDrawable(ColorDrawable(0))
+        volumeControlStream = AudioManager.STREAM_VOICE_CALL
+
+        window.apply{
+            decorView.keepScreenOn = true
+            addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+            statusBarColor = 0
+            navigationBarColor = 0
+
+            decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                    View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        }
 
         // Keep screen always on, unless the user interacts (wakes the mess up...)
      /*   window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -42,7 +76,7 @@ class TaskActivity : AppCompatActivity() {
         wl.acquire(10 * 60 * 1000L)*/
 
         // Проверка, запущен ли ForegroundService или нет
-        startOrStopAlarmService()
+        startAlarmService()
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         setupObservers()
@@ -54,10 +88,10 @@ class TaskActivity : AppCompatActivity() {
                 rightAnswer -> {
                     stopService(Intent(this, AlarmService::class.java))
                     Toast.makeText(this, "Отлично!", Toast.LENGTH_SHORT).show()
-                   /* val nextActivityMain = Intent(this, MainActivity::class.java)
+                    val nextActivityMain = Intent(this, MainActivity::class.java)
                     // пользователь ответил верно -> посылаем ответ в MainActivity об отключении будильника
                     nextActivityMain.putExtra("result", "true")
-                    startActivity(nextActivityMain)*/
+                    startActivity(nextActivityMain)
                     Receiver()?.cancelAlarm(this)
                 }
                 "" -> {
@@ -82,7 +116,7 @@ class TaskActivity : AppCompatActivity() {
         }
     }
 
-    private fun startOrStopAlarmService() {
+    private fun startAlarmService() {
         if(!isMyServiceRunning(AlarmService::class.java)) {
             Toast.makeText(this, "Start!", Toast.LENGTH_SHORT).show()
             startService(Intent(this, AlarmService::class.java))
@@ -120,7 +154,6 @@ class TaskActivity : AppCompatActivity() {
                 }
             }
         }
-        val randIndexTask = (1..4).random() - 1
         viewModel.localTasks.observe(this)  {
             binding.textView.text = it[randIndexTask].task
             rightAnswer = it[randIndexTask].answer
@@ -129,5 +162,6 @@ class TaskActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopService(Intent(this, AlarmService::class.java))
     }
 }

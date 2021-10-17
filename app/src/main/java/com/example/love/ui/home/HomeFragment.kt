@@ -1,22 +1,18 @@
 package com.example.love.ui.home
 
-import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.example.love.BroadcastReceiver.Receiver
+import com.example.love.MainActivity
 import com.example.love.R
-import com.example.love.TaskActivity
 import com.example.love.databinding.FragmentHomeBinding
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -25,7 +21,6 @@ import java.util.*
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
-    // аргумент из настроек
     private val args: HomeFragmentArgs by navArgs()
     private val calendar: Calendar = Calendar.getInstance()
 
@@ -36,12 +31,22 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+        val activity: MainActivity? = activity as MainActivity?
+        val myDataFromActivity: String? = activity?.getMyData()
+        if(myDataFromActivity != null) {
+            if(myDataFromActivity == "true") {
+                System.out.println("WORKING VIKA")
+                save("", "", false, -1)
+                binding.cardViewActiveAlarm.visibility = View.GONE
+            }
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // загрузить настройки уже установленного будильника и тему из Preference
+
         loadSettingsTheme()
         loadAlarm()
         // нажатие на "Установить будильник"
@@ -71,10 +76,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     // Диалог удаления будильника
     private fun setDialogDeleteAlarm() {
         val builder = AlertDialog.Builder(context)
@@ -83,8 +84,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             setIcon(R.drawable.ic_nights_stay_dark)
             setMessage("Вы уверены?")
             setPositiveButton("Да"){ dialog, which ->
-                // удаляем
-                Receiver()?.cancelAlarm(context)
+                Receiver().cancelAlarm(context)
                 save("", "", false, -1)
                 binding.cardViewActiveAlarm.visibility = View.GONE
             }
@@ -108,8 +108,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 dayOfMonth = dM
                 // Результирующая дата
                 dateAlarm = "$dayOfMonth.$month.$year"
+             setAlarmTime()
                 // Вызов часов
-                setAlarmTime()
         }, year, month, dayOfMonth)
         }?.show()
     }
@@ -132,7 +132,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             val resultTime: String = SimpleDateFormat("HH:mm").format(calendar.time).toString()
             Receiver().setAlarm(calendar.timeInMillis, context)
-            System.out.println("VIKA $calendar.timeInMillis")
             // Устанавливаем дату и время на экране приложения
             setAlarmCard(dateAlarm, resultTime)
         }
@@ -168,7 +167,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             putBoolean("checked", checked).apply()
             putInt("visibility", visibility).apply()
         }
-        // Intent(context, Receiver::class.java)
     }
     // восстанавливаем данные из Preferences (если будильник уже был установлен)
     private fun restoreData(savedTime: String?, savedDate: String?, savedVisibility: Int, savedStatusSwitch: Boolean) {
