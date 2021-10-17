@@ -18,7 +18,11 @@ class Receiver: BroadcastReceiver() {
         val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, TaskActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(contextTime, pendingIntent), pendingIntent)
+        alarmManager.setAlarmClock(
+            AlarmManager.AlarmClockInfo(
+                contextTime, pendingIntent),
+            pendingIntent
+        )
     }
     // Повторение будильника
      fun repeatAlarm(context: Context?) {
@@ -33,20 +37,9 @@ class Receiver: BroadcastReceiver() {
     }
     // Выключение будильника
      fun cancelAlarm(context: Context?) {
-        val argAlarm = Bundle()
-        argAlarm.putString("statusAlarm", "test")
-
         val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-        /* val pendingIntent = NavDeepLinkBuilder(context)
-             .setComponentName(MainActivity::class.java)
-             .setGraph(R.navigation.mobile_navigation)
-             .setDestination(R.id.navigation_home)
-             .setArguments(argAlarm)
-             .createPendingIntent()*/
-        // val pendingIntent = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         alarmManager.cancel(pendingIntent)
     }
 }

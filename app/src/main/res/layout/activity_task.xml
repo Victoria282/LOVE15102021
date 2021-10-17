@@ -19,7 +19,7 @@
         android:id="@+id/textView"
         style="@style/textViewStyleLight"
         android:layout_width="wrap_content"
-        android:layout_height="380dp"
+        android:layout_height="wrap_content"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,12 +37,12 @@
         android:gravity="center"
         android:hint="@string/hint_edit_text"
         android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/buttonOffAlarm"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.129" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:backgroundTint="#2C2C2C"

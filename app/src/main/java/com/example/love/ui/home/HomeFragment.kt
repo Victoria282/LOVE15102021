@@ -1,5 +1,6 @@
 package com.example.love.ui.home
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.example.love.BroadcastReceiver.Receiver
@@ -23,29 +25,24 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
     private val args: HomeFragmentArgs by navArgs()
     private val calendar: Calendar = Calendar.getInstance()
-
-    // Дата и время установленного будильника
     var dateAlarm = " "
-    var timeAlarm = " "
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val activity: MainActivity? = activity as MainActivity?
         val myDataFromActivity: String? = activity?.getMyData()
-        if(myDataFromActivity != null) {
-            if(myDataFromActivity == "true") {
-                System.out.println("WORKING VIKA")
-                save("", "", false, -1)
-                binding.cardViewActiveAlarm.visibility = View.GONE
-            }
-        }
+        getInfoStatusAlarm(myDataFromActivity)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // загрузить настройки уже установленного будильника и тему из Preference
+
+        binding.imageView.setOnClickListener {
+           showAnimation()
+        }
 
         loadSettingsTheme()
         loadAlarm()
@@ -66,6 +63,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    private fun showAnimation() {
+        binding.imageView.animate().apply {
+            duration = 1000
+            alpha(.5f)
+            scaleXBy(.5f)
+            scaleYBy(.5f)
+            rotationYBy(360f)
+            translationYBy(200f)
+        }.withEndAction {
+            binding.imageView.animate().apply {
+                duration = 1000
+                alpha(1f)
+                scaleXBy(-.5f)
+                scaleYBy(-.5f)
+                rotationYBy(360f)
+                translationYBy(-200f)
+            }
+        }.start()
+    }
+
     override fun onStart() {
         super.onStart()
         if(args.back == "true") {
@@ -73,6 +90,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         if(args.back == "false") {
             setSettingsTheme(args.back.toBoolean())
+        }
+    }
+
+    private fun getInfoStatusAlarm(myDataFromActivity: String?) {
+        if(myDataFromActivity != null && myDataFromActivity == "true") {
+            save("", "", false, -1)
+            binding.cardViewActiveAlarm.visibility = View.GONE
         }
     }
 
@@ -114,6 +138,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }?.show()
     }
 
+    @SuppressLint("SimpleDateFormat")
     private fun  setAlarmTime() {
         val picker = MaterialTimePicker
             .Builder()
@@ -132,7 +157,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
             val resultTime: String = SimpleDateFormat("HH:mm").format(calendar.time).toString()
             Receiver().setAlarm(calendar.timeInMillis, context)
-            // Устанавливаем дату и время на экране приложения
             setAlarmCard(dateAlarm, resultTime)
         }
         fragmentManager?.let { it1 -> picker.show(it1, "tag") }
