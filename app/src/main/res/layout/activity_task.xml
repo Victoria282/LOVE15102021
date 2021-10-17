@@ -13,7 +13,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.053" />
+        app:layout_constraintVertical_bias="0.095" />
 
     <TextView
         android:id="@+id/textView"
@@ -26,7 +26,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tittleTask"
-        app:layout_constraintVertical_bias="0.142" />
+        app:layout_constraintVertical_bias="0.315" />
 
     <EditText
         android:id="@+id/editTextTextPersonName"

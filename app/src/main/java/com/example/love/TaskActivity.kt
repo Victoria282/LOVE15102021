@@ -37,6 +37,8 @@ class TaskActivity : AppCompatActivity() {
 
         binding = ActivityTaskBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
