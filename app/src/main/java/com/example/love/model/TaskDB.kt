@@ -3,7 +3,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-// name DB
 @Entity(tableName = "tasks")
 
 data class TaskDB(

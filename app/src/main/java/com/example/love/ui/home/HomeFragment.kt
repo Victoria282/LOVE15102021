@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,6 +16,7 @@ import androidx.navigation.fragment.navArgs
 import com.example.love.BroadcastReceiver.Receiver
 import com.example.love.MainActivity
 import com.example.love.R
+import com.example.love.Service.AlarmService
 import com.example.love.databinding.FragmentHomeBinding
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -77,8 +79,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 alpha(1f)
                 scaleXBy(-.5f)
                 scaleYBy(-.5f)
-                rotationYBy(360f)
+                rotationXBy(360f)
                 translationYBy(-200f)
+
             }
         }.start()
     }
@@ -108,7 +111,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             setIcon(R.drawable.ic_nights_stay_dark)
             setMessage("Вы уверены?")
             setPositiveButton("Да"){ dialog, which ->
-                Receiver().cancelAlarm(context)
+                Receiver(context).cancelAlarm(context)
                 save("", "", false, -1)
                 binding.cardViewActiveAlarm.visibility = View.GONE
             }
@@ -156,7 +159,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             calendar.set(Calendar.HOUR_OF_DAY, picker.hour)
 
             val resultTime: String = SimpleDateFormat("HH:mm").format(calendar.time).toString()
-            Receiver().setAlarm(calendar.timeInMillis, context)
+            context?.let { it1 -> Receiver(it1).setAlarm(calendar.timeInMillis, context) }
             setAlarmCard(dateAlarm, resultTime)
         }
         fragmentManager?.let { it1 -> picker.show(it1, "tag") }

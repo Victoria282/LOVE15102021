@@ -37,9 +37,8 @@ class TaskActivity : AppCompatActivity() {
 
         binding = ActivityTaskBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        // ПРОБУЖДЕНИЕ ЭКРАНА
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true)
@@ -65,19 +64,7 @@ class TaskActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         }
-
-        // Keep screen always on, unless the user interacts (wakes the mess up...)
-     /*   window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-
-        setTurnScreenOn(true)
-        setShowWhenLocked(true)*/
-
-       /* val pm = this!!.getSystemService(Context.POWER_SERVICE) as PowerManager
-        val wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "TAG")
-        //Осуществляем блокировку
-        wl.acquire(10 * 60 * 1000L)*/
-
-        // Проверка, запущен ли ForegroundService или нет
+        // ЗАПУСК СЕРВИСА
         startAlarmService()
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
@@ -94,7 +81,7 @@ class TaskActivity : AppCompatActivity() {
                     // пользователь ответил верно -> посылаем ответ в MainActivity об отключении будильника
                     nextActivityMain.putExtra("result", "true")
                     startActivity(nextActivityMain)
-                    Receiver()?.cancelAlarm(this)
+                    Receiver(this).cancelAlarm(this)
                 }
                 "" -> {
                     Toast.makeText(this, "Введите ответ!", Toast.LENGTH_SHORT).show()
@@ -105,7 +92,7 @@ class TaskActivity : AppCompatActivity() {
                     }
                     else {
                         countOfAnswer = 2
-                        Receiver()?.repeatAlarm(this)
+                        Receiver(this).repeatAlarm(this)
                         stopService(Intent(this, AlarmService::class.java))
                         Toast.makeText(this, "Плохо..", Toast.LENGTH_SHORT).show()
                         val nextActivityMain = Intent(this, MainActivity::class.java)
