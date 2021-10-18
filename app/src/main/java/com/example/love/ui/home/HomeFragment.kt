@@ -4,19 +4,28 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.example.love.BroadcastReceiver.Receiver
+import com.example.love.Constants
+import com.example.love.Constants.DATE_ALARM_ID
+import com.example.love.Constants.SWITCH_ALARM_ID
+import com.example.love.Constants.THEME_ALARM_ID
+import com.example.love.Constants.TIME_ALARM_ID
+import com.example.love.Constants.VISIBILITY_ALARM_ID
 import com.example.love.MainActivity
 import com.example.love.R
-import com.example.love.Service.AlarmService
+import com.example.love.SharedPreferences.SharedPreferences.cardVisibility
+import com.example.love.SharedPreferences.SharedPreferences.customPreference
+import com.example.love.SharedPreferences.SharedPreferences.dateAlarm
+import com.example.love.SharedPreferences.SharedPreferences.switchStatus
+import com.example.love.SharedPreferences.SharedPreferences.timeAlarm
+import com.example.love.other.animation.animateImageView
 import com.example.love.databinding.FragmentHomeBinding
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
@@ -25,81 +34,47 @@ import java.util.*
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
-    private val args: HomeFragmentArgs by navArgs()
     private val calendar: Calendar = Calendar.getInstance()
-    var dateAlarm = " "
+
+    private var dateAlarm: String = ""
+    private var resultTime: String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
+
         val activity: MainActivity? = activity as MainActivity?
         val myDataFromActivity: String? = activity?.getMyData()
         getInfoStatusAlarm(myDataFromActivity)
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // загрузить настройки уже установленного будильника и тему из Preference
-
-        binding.imageView.setOnClickListener {
-           showAnimation()
-        }
 
         loadSettingsTheme()
         loadAlarm()
-        // нажатие на "Установить будильник"
-        binding.buttonSetAlarm.setOnClickListener {
-            // открытие календаря
-            setAlarmDate()
-        }
-        // Удаление при нажатии на checkBox
-        binding.statusAlarm.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(isChecked) {
-                // Будильник заведен
+
+        with(binding) {
+            imageView.setOnClickListener {
+                it.animateImageView()
             }
-            else {
-                // Диалог с пользователем
-                setDialogDeleteAlarm()
+            buttonSetAlarm.setOnClickListener {
+                setAlarmDate()
+            }
+            statusAlarm.setOnCheckedChangeListener { _, isChecked ->
+                if (!isChecked) {
+                    setDialogDeleteAlarm()
+                }
             }
         }
     }
 
-    private fun showAnimation() {
-        binding.imageView.animate().apply {
-            duration = 1000
-            alpha(.5f)
-            scaleXBy(.5f)
-            scaleYBy(.5f)
-            rotationYBy(360f)
-            translationYBy(200f)
-        }.withEndAction {
-            binding.imageView.animate().apply {
-                duration = 1000
-                alpha(1f)
-                scaleXBy(-.5f)
-                scaleYBy(-.5f)
-                rotationXBy(360f)
-                translationYBy(-200f)
-
-            }
-        }.start()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        if(args.back == "true") {
-            setSettingsTheme(args.back.toBoolean())
-        }
-        if(args.back == "false") {
-            setSettingsTheme(args.back.toBoolean())
-        }
-    }
-
+    // Статус будильника (включен / выключен)
     private fun getInfoStatusAlarm(myDataFromActivity: String?) {
         if(myDataFromActivity != null && myDataFromActivity == "true") {
-            save("", "", false, -1)
-            binding.cardViewActiveAlarm.visibility = View.GONE
+            deleteCardViewAlarm()
         }
     }
 
@@ -110,12 +85,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             setTitle("Удалить будильник")
             setIcon(R.drawable.ic_nights_stay_dark)
             setMessage("Вы уверены?")
-            setPositiveButton("Да"){ dialog, which ->
+            setPositiveButton("Да"){ _, _ ->
                 Receiver(context).cancelAlarm(context)
-                save("", "", false, -1)
-                binding.cardViewActiveAlarm.visibility = View.GONE
+                deleteCardViewAlarm()
             }
-            setNegativeButton("Отмена"){ dialog,which ->
+            setNegativeButton("Отмена"){ _, _ ->
                 binding.statusAlarm.isChecked = true
             }
         }
@@ -123,6 +97,13 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         dialog.show()
     }
 
+    // Удаление card View с будильником
+    private fun deleteCardViewAlarm() {
+        save("", "", false, -1)
+        binding.cardViewActiveAlarm.visibility = View.GONE
+    }
+
+    // установка даты будильника
     private fun setAlarmDate() {
         var year = calendar.get(Calendar.YEAR)
         var month = calendar.get(Calendar.MONTH)
@@ -135,14 +116,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 dayOfMonth = dM
                 // Результирующая дата
                 dateAlarm = "$dayOfMonth.$month.$year"
-             setAlarmTime()
+                setAlarmTime(year, month, dayOfMonth)
                 // Вызов часов
         }, year, month, dayOfMonth)
         }?.show()
     }
 
+    // установка времени будильника
     @SuppressLint("SimpleDateFormat")
-    private fun  setAlarmTime() {
+    private fun  setAlarmTime(year: Int, month: Int, dayOfMonth: Int) {
         val picker = MaterialTimePicker
             .Builder()
             .setTimeFormat(TimeFormat.CLOCK_24H)
@@ -153,83 +135,71 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             .build()
 
         picker.addOnPositiveButtonClickListener {
-            calendar.set(Calendar.SECOND, 0)
-            calendar.set(Calendar.MILLISECOND, 0)
-            calendar.set(Calendar.MINUTE, picker.minute)
-            calendar.set(Calendar.HOUR_OF_DAY, picker.hour)
+            with(calendar) {
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+                set(Calendar.MINUTE, picker.minute)
+                set(Calendar.HOUR_OF_DAY, picker.hour)
 
-            val resultTime: String = SimpleDateFormat("HH:mm").format(calendar.time).toString()
-            context?.let { it1 -> Receiver(it1).setAlarm(calendar.timeInMillis, context) }
+                resultTime = SimpleDateFormat("HH:mm").format(time).toString()
+                context?.let { it1 -> Receiver(it1).setAlarm(timeInMillis, context) }
+            }
             setAlarmCard(dateAlarm, resultTime)
         }
         fragmentManager?.let { it1 -> picker.show(it1, "tag") }
     }
 
     // Показываем карточку пользователю с установленным временем и датой для будильника
-    private fun setAlarmCard(dateAlarm: String, timeAlarm: String) {
-        binding.cardViewActiveAlarm.visibility = View.VISIBLE
-        binding.timeAlarm.text = timeAlarm
-        binding.dateAlarm.text = dateAlarm
-        binding.statusAlarm.isChecked = true
-        save(timeAlarm, dateAlarm, binding.statusAlarm.isChecked, binding.cardViewActiveAlarm.visibility)
+    private fun setAlarmCard(date: String, time: String) {
+        with(binding) {
+            statusAlarm.isChecked = true
+            dateAlarm.text = date
+            timeAlarm.text = time
+            cardViewActiveAlarm.visibility = View.VISIBLE
+        }
+        save(time, date, true, 0)
     }
 
     // загрузить данные об уже установленном будильнике
     private fun loadAlarm() {
-        val sharedPref: SharedPreferences = (context?.getSharedPreferences("sharedPref", Context.MODE_PRIVATE) ?: "empty") as SharedPreferences
-        val savedTime = sharedPref.getString("timeAlarm", "")
-        val savedDate = sharedPref.getString("dateAlarm", "")
-        val savedVisibility = sharedPref.getInt("visibility", -1)
-        val savedStatusSwitch = sharedPref.getBoolean("checked", false)
+        val prefs = customPreference(requireContext(), "SharedPreferences")
+        val savedTime = prefs.getString(TIME_ALARM_ID, "")
+        val savedDate = prefs.getString(DATE_ALARM_ID, "")
+        val savedStatusSwitch = prefs.getBoolean(SWITCH_ALARM_ID, false)
+        val savedVisibility = prefs.getInt(VISIBILITY_ALARM_ID, -1)
         restoreData(savedTime, savedDate, savedVisibility, savedStatusSwitch)
     }
 
     // запомнить данные об установленном будильнике
     private fun save(timeAlarm: String, dateAlarm: String, checked: Boolean, visibility: Int) {
-        val sharedPref: SharedPreferences = (context?.getSharedPreferences("sharedPref", Context.MODE_PRIVATE) ?: "empty") as SharedPreferences
-        val editor = sharedPref.edit()
-        editor.apply() {
-            putString("timeAlarm", timeAlarm).apply()
-            putString("dateAlarm", dateAlarm).apply()
-            putBoolean("checked", checked).apply()
-            putInt("visibility", visibility).apply()
-        }
+        val prefs = customPreference(requireContext(), "SharedPreferences")
+        prefs.timeAlarm = timeAlarm
+        prefs.dateAlarm = dateAlarm
+        prefs.switchStatus = checked
+        prefs.cardVisibility = visibility
     }
     // восстанавливаем данные из Preferences (если будильник уже был установлен)
     private fun restoreData(savedTime: String?, savedDate: String?, savedVisibility: Int, savedStatusSwitch: Boolean) {
-        binding.timeAlarm.text = savedTime
-        binding.dateAlarm.text = savedDate
-        binding.cardViewActiveAlarm.visibility = savedVisibility
-        binding.statusAlarm.isChecked = savedStatusSwitch
-    }
-
-    private fun setSettingsTheme(theme: Boolean) {
-        saveTheme(theme)
+        with(binding) {
+            timeAlarm.text = savedTime
+            dateAlarm.text = savedDate
+            cardViewActiveAlarm.visibility = savedVisibility
+            statusAlarm.isChecked = savedStatusSwitch
+        }
     }
 
     private fun loadSettingsTheme() {
-        val sharedPref: SharedPreferences = (context?.getSharedPreferences("sharedPref", Context.MODE_PRIVATE) ?: "empty") as SharedPreferences
-        val savedTheme = sharedPref.getBoolean("theme", false)
-        restoreTheme(savedTheme)
+       val prefs = customPreference(requireContext(), "SharedPreferences")
+       val savedTheme = prefs.getBoolean(THEME_ALARM_ID, false)
+       restoreTheme(savedTheme)
     }
 
-    private fun saveTheme(theme: Boolean) {
-        val sharedPref: SharedPreferences = (context?.getSharedPreferences("sharedPref", Context.MODE_PRIVATE) ?: "empty") as SharedPreferences
-        val editor = sharedPref.edit()
-        editor.apply() {
-            putBoolean("theme", theme).apply()
-        }
-        setThemeApp(theme)
-    }
     private fun restoreTheme(savedTheme: Boolean) {
-        setThemeApp(savedTheme)
-    }
-
-    private fun setThemeApp(theme: Boolean) {
-        if(theme) {
-            binding.homeContainer.setBackgroundResource(R.drawable.light)
-        } else {
-            binding.homeContainer.setBackgroundResource(R.drawable.dark)
+        with(binding.homeContainer) {
+            if(savedTheme)
+                setBackgroundResource(R.drawable.light)
+            else
+                setBackgroundResource(R.drawable.dark)
         }
     }
 

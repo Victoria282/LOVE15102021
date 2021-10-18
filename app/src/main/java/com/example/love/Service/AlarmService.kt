@@ -6,7 +6,8 @@ import android.media.MediaPlayer
 import android.os.*
 import android.view.Window
 import android.view.WindowManager
-import com.example.love.Constants.CHANELL_ID
+import androidx.annotation.RequiresApi
+import com.example.love.Constants.CHANNEL_ID
 import com.example.love.Constants.FOREGROUND_ID
 import com.example.love.Constants.NOTIFICATION_CHANNEL_ID
 import com.example.love.Constants.NOTIFICATION_ID
@@ -24,6 +25,7 @@ class AlarmService: Service() {
         return null
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate() {
         super.onCreate()
         mediaPlayer = MediaPlayer.create(this, R.raw.music)
@@ -31,6 +33,7 @@ class AlarmService: Service() {
         createNotificationChannel()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         showNotification()
         mediaPlayer?.isLooping
@@ -39,6 +42,7 @@ class AlarmService: Service() {
         return START_STICKY
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
         val serviceChannel = NotificationChannel(
             NOTIFICATION_ID,
@@ -49,6 +53,7 @@ class AlarmService: Service() {
         manager.createNotificationChannel(serviceChannel)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun showNotification() {
         val notificationIntent = Intent(this, TaskActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(this, 1, notificationIntent, 0)
@@ -57,7 +62,7 @@ class AlarmService: Service() {
             .setContentText("Просыпайся!")
             .setSmallIcon(R.drawable.ic_nights_stay)
             .setContentIntent(pendingIntent)
-            .setChannelId(CHANELL_ID)
+            .setChannelId(CHANNEL_ID)
             .build()
         startForeground(FOREGROUND_ID, notification)
     }

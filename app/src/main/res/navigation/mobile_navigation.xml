@@ -10,11 +10,6 @@
         android:name="com.example.love.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home">
-        <argument
-            android:defaultValue="@null"
-            android:name="back"
-            app:argType="string"
-            app:nullable="true"/>
     </fragment>
 
     <fragment

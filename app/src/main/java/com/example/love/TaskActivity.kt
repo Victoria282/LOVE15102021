@@ -27,17 +27,61 @@ class TaskActivity : AppCompatActivity() {
 
     private val randIndexTask = (1..4).random() - 1
 
-    private var countOfAnswer: Int = 2
-
     private var rightAnswer: String = ""
     private var userAnswer: String = ""
+
+    private var countOfAnswer: Int = 2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityTaskBinding.inflate(layoutInflater)
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         setContentView(binding.root)
 
+        // пробуждение экрана
+        wakeUpApp()
+
+        // запуск сервиса с музыкой и вибрацией
+        startAlarmService()
+        setupObservers()
+
+        binding.buttonOffAlarm.setOnClickListener {
+            userAnswer = binding.editTextTextPersonName.text.toString().trim()
+            countOfAnswer--
+
+            when (userAnswer) {
+                rightAnswer -> {
+                    actionRightAnswer()
+                }
+                "" -> {
+                    Toast.makeText(this, "Введите ответ!", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+                    actionMistakeAnswer()
+                }
+            }
+        }
+    }
+
+    private fun actionRightAnswer() {
+        val nextActivityMain = Intent(this, MainActivity::class.java)
+        stopService(Intent(this, AlarmService::class.java))
+        nextActivityMain.putExtra("result", "true")
+        startActivity(nextActivityMain)
+        Receiver(this).cancelAlarm(this)
+    }
+
+    private fun actionMistakeAnswer() {
+        val nextActivityMain = Intent(this, MainActivity::class.java)
+        countOfAnswer = 2
+        stopService(Intent(this, AlarmService::class.java))
+        nextActivityMain.putExtra("result", "false")
+        startActivity(nextActivityMain)
+        Receiver(this).repeatAlarm(this)
+    }
+
+    private fun wakeUpApp() {
         // ПРОБУЖДЕНИЕ ЭКРАНА
         @Suppress("DEPRECATION")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
@@ -64,54 +108,13 @@ class TaskActivity : AppCompatActivity() {
                     View.SYSTEM_UI_FLAG_IMMERSIVE or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         }
-        // ЗАПУСК СЕРВИСА
-        startAlarmService()
-
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        setupObservers()
-
-        binding.buttonOffAlarm.setOnClickListener {
-            userAnswer = binding.editTextTextPersonName.text.toString().trim()
-            countOfAnswer--
-            when (userAnswer) {
-                rightAnswer -> {
-                    stopService(Intent(this, AlarmService::class.java))
-                    Toast.makeText(this, "Отлично!", Toast.LENGTH_SHORT).show()
-                    val nextActivityMain = Intent(this, MainActivity::class.java)
-                    // пользователь ответил верно -> посылаем ответ в MainActivity об отключении будильника
-                    nextActivityMain.putExtra("result", "true")
-                    startActivity(nextActivityMain)
-                    Receiver(this).cancelAlarm(this)
-                }
-                "" -> {
-                    Toast.makeText(this, "Введите ответ!", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    if(countOfAnswer != 0) {
-                        Toast.makeText(this, "Не верно, попробуйте ещё!", Toast.LENGTH_SHORT).show()
-                    }
-                    else {
-                        countOfAnswer = 2
-                        Receiver(this).repeatAlarm(this)
-                        stopService(Intent(this, AlarmService::class.java))
-                        Toast.makeText(this, "Плохо..", Toast.LENGTH_SHORT).show()
-                        val nextActivityMain = Intent(this, MainActivity::class.java)
-                        // пользователь ответил верно -> посылаем ответ в MainActivity об отключении будильника
-                        nextActivityMain.putExtra("result", "false")
-                        startActivity(nextActivityMain)
-                    }
-                }
-            }
-        }
     }
 
     private fun startAlarmService() {
         if(!isMyServiceRunning(AlarmService::class.java)) {
-            Toast.makeText(this, "Start!", Toast.LENGTH_SHORT).show()
             startService(Intent(this, AlarmService::class.java))
         }
     }
-
 
     private fun isMyServiceRunning(myService: Class<AlarmService>):Boolean {
         val manager : ActivityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -139,10 +142,14 @@ class TaskActivity : AppCompatActivity() {
                     }
                 }
                 Status.ERROR -> {
-                    binding.textView.text = "Ошибка!"
+                    binding.textView.text = "Что-то пошло не так.."
                 }
             }
         }
+        getTaskFromDB()
+    }
+
+    private fun getTaskFromDB() {
         viewModel.localTasks.observe(this)  {
             binding.textView.text = it[randIndexTask].task
             rightAnswer = it[randIndexTask].answer
