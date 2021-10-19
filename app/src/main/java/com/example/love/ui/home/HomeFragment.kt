@@ -57,9 +57,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         loadAlarm()
 
         with(binding) {
-            imageView.setOnClickListener {
-                it.animateImageView()
-            }
             buttonSetAlarm.setOnClickListener {
                 setAlarmDate()
             }
@@ -76,6 +73,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         if(myDataFromActivity != null && myDataFromActivity == "true") {
             deleteCardViewAlarm()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        binding.imageView.animateImageView()
     }
 
     // Диалог удаления будильника
