@@ -21,6 +21,9 @@ import com.example.love.model.TaskDB
 import com.example.love.other.animation.Constants.TIME_TO_REPEAT_ALARM
 import com.example.love.view_model.MainViewModel
 import ru.unit6.course.android.retrofit.utils.Status
+import android.view.Gravity
+import com.example.love.other.animation.ObjectPending
+
 
 class TaskActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTaskBinding
@@ -32,7 +35,6 @@ class TaskActivity : AppCompatActivity() {
     private var userAnswer: String = ""
 
     private var countOfAnswer: Int = 2
-    private var str: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,43 +48,41 @@ class TaskActivity : AppCompatActivity() {
         setupObservers()
 
         binding.buttonOffAlarm.setOnClickListener {
-            userAnswer = binding.editTextTextPersonName.text.toString().trim()
             countOfAnswer--
-            makeDecision()
+            userAnswer = binding.editTextTextPersonName.text.toString().trim()
+            when (userAnswer) {
+                rightAnswer -> {
+                    ObjectPending.globalList.clear()
+                    finishTaskActivity("true")
+                }
+                "" -> {
+                    showMessage("Введите ответ!")
+                }
+                else -> {
+                    if(countOfAnswer != 0) {
+                        showMessage("Не верно, попробуйте ещё..")
+                    }
+                    else {
+                        countOfAnswer = 2
+                        val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                        val intent = Intent(this, com.example.love.BroadcastReceiver.BroadcastReceiver::class.java)
+                        intent.action = "set"
+                        intent.putExtra("alarmInfo", System.currentTimeMillis())
+                        val pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+                        ObjectPending.globalList.add(pi)
+                        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(System.currentTimeMillis() + 1000 * 60 * 3, pi), pi)
+                        finishTaskActivity("false")
+                    }
+                }
+            }
         }
     }
 
-    private fun makeDecision() {
-        when (userAnswer) {
-            rightAnswer -> {
-                finishTaskActivity("true")
-            }
-            "" -> {
-                str = "Введите ответ!"
-                showMessage(str)
-               }
-            else -> {
-                if(countOfAnswer != 0) {
-                    str = "Не верно, попробуйте еще.."
-                    showMessage(str)
-                }
-                else {
-                    repeatAlarm()
-                }
-            }
-        }
-    }
     private fun showMessage(str: String) {
-        Toast.makeText(this, str, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun repeatAlarm() {
-        val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, com.example.love.BroadcastReceiver.BroadcastReceiver::class.java)
-        intent.action = "set"
-        val pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(System.currentTimeMillis() + TIME_TO_REPEAT_ALARM, pi), pi)
-        finishTaskActivity("false")
+        val toast = Toast.makeText(this, "", Toast.LENGTH_SHORT)
+        toast.setText(str)
+        toast.setGravity(Gravity.CENTER, 0, 0)
+        toast.show()
     }
 
     private fun finishTaskActivity(msg: String) {

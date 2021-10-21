@@ -60,7 +60,6 @@ class AlarmService: Service() {
             .setSmallIcon(R.drawable.ic_nights_stay)
             .setContentIntent(pendingIntent)
             .setChannelId(CHANNEL_ID)
-            .setVibrate(pattern)
             .build()
         startForeground(FOREGROUND_ID, notification)
     }
