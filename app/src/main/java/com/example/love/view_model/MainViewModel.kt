@@ -23,7 +23,7 @@ class MainViewModel : ViewModel() {
     val localTasks : LiveData<List<TaskDB>>
         get() = _localTasks
 
-    fun getTasksFromDatabase() = viewModelScope.launch {
+    private fun getTasksFromDatabase() = viewModelScope.launch {
         try {
             _localTasks.postValue(appDatabase.userDao().getAllTasks())
         }

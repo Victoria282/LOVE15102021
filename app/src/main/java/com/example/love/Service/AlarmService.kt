@@ -1,25 +1,22 @@
 package com.example.love.Service
 
+import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.*
-import android.view.Window
-import android.view.WindowManager
 import androidx.annotation.RequiresApi
-import com.example.love.Constants.CHANNEL_ID
-import com.example.love.Constants.FOREGROUND_ID
-import com.example.love.Constants.NOTIFICATION_CHANNEL_ID
-import com.example.love.Constants.NOTIFICATION_ID
-import com.example.love.MainActivity
+import com.example.love.other.animation.Constants.CHANNEL_ID
+import com.example.love.other.animation.Constants.FOREGROUND_ID
+import com.example.love.other.animation.Constants.NOTIFICATION_CHANNEL_ID
+import com.example.love.other.animation.Constants.NOTIFICATION_ID
 import com.example.love.R
 import com.example.love.TaskActivity
-import okhttp3.internal.wait
 
 class AlarmService: Service() {
     private var mediaPlayer: MediaPlayer? = null
     private var vibrator: Vibrator? = null
-    private val pattern = longArrayOf(0, 100, 1000)
+    private val pattern = longArrayOf(0, 500, 1000)
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -63,6 +60,7 @@ class AlarmService: Service() {
             .setSmallIcon(R.drawable.ic_nights_stay)
             .setContentIntent(pendingIntent)
             .setChannelId(CHANNEL_ID)
+            .setVibrate(pattern)
             .build()
         startForeground(FOREGROUND_ID, notification)
     }
@@ -71,5 +69,6 @@ class AlarmService: Service() {
         super.onDestroy()
         mediaPlayer?.stop()
         vibrator?.cancel()
+        stopForeground(true)
     }
 }

@@ -1,23 +1,24 @@
 package com.example.love
 
 import android.app.ActivityManager
+import android.app.AlarmManager
 import android.app.KeyguardManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.example.love.BroadcastReceiver.Receiver
 import com.example.love.Service.AlarmService
 import com.example.love.databinding.ActivityTaskBinding
 import com.example.love.model.TaskDB
+import com.example.love.other.animation.Constants.TIME_TO_REPEAT_ALARM
 import com.example.love.view_model.MainViewModel
 import ru.unit6.course.android.retrofit.utils.Status
 
@@ -31,6 +32,7 @@ class TaskActivity : AppCompatActivity() {
     private var userAnswer: String = ""
 
     private var countOfAnswer: Int = 2
+    private var str: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,46 +41,58 @@ class TaskActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         setContentView(binding.root)
 
-        // пробуждение экрана
         wakeUpApp()
-
-        // запуск сервиса с музыкой и вибрацией
         startAlarmService()
         setupObservers()
 
         binding.buttonOffAlarm.setOnClickListener {
             userAnswer = binding.editTextTextPersonName.text.toString().trim()
             countOfAnswer--
+            makeDecision()
+        }
+    }
 
-            when (userAnswer) {
-                rightAnswer -> {
-                    actionRightAnswer()
+    private fun makeDecision() {
+        when (userAnswer) {
+            rightAnswer -> {
+                finishTaskActivity("true")
+            }
+            "" -> {
+                str = "Введите ответ!"
+                showMessage(str)
+               }
+            else -> {
+                if(countOfAnswer != 0) {
+                    str = "Не верно, попробуйте еще.."
+                    showMessage(str)
                 }
-                "" -> {
-                    Toast.makeText(this, "Введите ответ!", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    actionMistakeAnswer()
+                else {
+                    repeatAlarm()
                 }
             }
         }
     }
-
-    private fun actionRightAnswer() {
-        val nextActivityMain = Intent(this, MainActivity::class.java)
-        stopService(Intent(this, AlarmService::class.java))
-        nextActivityMain.putExtra("result", "true")
-        startActivity(nextActivityMain)
-        Receiver(this).cancelAlarm(this)
+    private fun showMessage(str: String) {
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show()
     }
 
-    private fun actionMistakeAnswer() {
-        val nextActivityMain = Intent(this, MainActivity::class.java)
-        countOfAnswer = 2
+    private fun repeatAlarm() {
+        val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, com.example.love.BroadcastReceiver.BroadcastReceiver::class.java)
+        intent.action = "set"
+        val pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(System.currentTimeMillis() + TIME_TO_REPEAT_ALARM, pi), pi)
+        finishTaskActivity("false")
+    }
+
+    private fun finishTaskActivity(msg: String) {
         stopService(Intent(this, AlarmService::class.java))
-        nextActivityMain.putExtra("result", "false")
+        val nextActivityMain = Intent(this, MainActivity::class.java)
+        nextActivityMain.putExtra("result", msg)
+        if(msg == "false") {
+            countOfAnswer = 2
+        }
         startActivity(nextActivityMain)
-        Receiver(this).repeatAlarm(this)
     }
 
     private fun wakeUpApp() {
@@ -129,6 +143,7 @@ class TaskActivity : AppCompatActivity() {
         viewModel.getAllTasks().observe(this) { resource ->
             when (resource.status) {
                 Status.SUCCESS -> {
+                    binding.progressBar.visibility = View.GONE
                     resource.data?.let { task ->
                         viewModel.setAllTasksToDatabase(
                             tasks = task.map { task ->
@@ -141,7 +156,11 @@ class TaskActivity : AppCompatActivity() {
                         )
                     }
                 }
+                Status.LOADING -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
                 Status.ERROR -> {
+                    binding.progressBar.visibility = View.GONE
                     binding.textView.text = "Что-то пошло не так.."
                 }
             }
@@ -160,4 +179,5 @@ class TaskActivity : AppCompatActivity() {
         super.onDestroy()
         stopService(Intent(this, AlarmService::class.java))
     }
+
 }

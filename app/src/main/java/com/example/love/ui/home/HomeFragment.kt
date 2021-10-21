@@ -3,21 +3,16 @@ package com.example.love.ui.home
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
-import com.example.love.BroadcastReceiver.Receiver
-import com.example.love.Constants
-import com.example.love.Constants.DATE_ALARM_ID
-import com.example.love.Constants.SWITCH_ALARM_ID
-import com.example.love.Constants.THEME_ALARM_ID
-import com.example.love.Constants.TIME_ALARM_ID
-import com.example.love.Constants.VISIBILITY_ALARM_ID
+import com.example.love.other.animation.Constants.DATE_ALARM_ID
+import com.example.love.other.animation.Constants.SWITCH_ALARM_ID
+import com.example.love.other.animation.Constants.THEME_ALARM_ID
+import com.example.love.other.animation.Constants.TIME_ALARM_ID
+import com.example.love.other.animation.Constants.VISIBILITY_ALARM_ID
 import com.example.love.MainActivity
 import com.example.love.R
 import com.example.love.SharedPreferences.SharedPreferences.cardVisibility
@@ -42,11 +37,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-
-        val activity: MainActivity? = activity as MainActivity?
-        val myDataFromActivity: String? = activity?.getMyData()
+        val activityData: MainActivity? = activity as MainActivity?
+        val myDataFromActivity: String? = activityData?.getMyData()
         getInfoStatusAlarm(myDataFromActivity)
-
         return binding.root
     }
 
@@ -55,17 +48,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         loadSettingsTheme()
         loadAlarm()
-
-        with(binding) {
-            buttonSetAlarm.setOnClickListener {
-                setAlarmDate()
-            }
-            statusAlarm.setOnCheckedChangeListener { _, isChecked ->
-                if (!isChecked) {
-                    setDialogDeleteAlarm()
-                }
-            }
-        }
     }
 
     // Статус будильника (включен / выключен)
@@ -77,10 +59,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     override fun onStart() {
         super.onStart()
-        binding.imageView.animateImageView()
+        with(binding) {
+            buttonSetAlarm.setOnClickListener {
+                setAlarmDate()
+            }
+            statusAlarm.setOnCheckedChangeListener { _, isChecked ->
+                if (!isChecked) {
+                    setDialogDeleteAlarm()
+                }
+            }
+            imageView.animateImageView()
+        }
     }
 
-    // Диалог удаления будильника
+
     private fun setDialogDeleteAlarm() {
         val builder = AlertDialog.Builder(context)
         with(builder) {
@@ -88,7 +80,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             setIcon(R.drawable.ic_nights_stay_dark)
             setMessage("Вы уверены?")
             setPositiveButton("Да"){ _, _ ->
-                Receiver(context).cancelAlarm(context)
+                val activity: MainActivity? = activity as MainActivity?
+                val test = activity?.sendActionToBroadcast(System.currentTimeMillis(), "cancel")
                 deleteCardViewAlarm()
             }
             setNegativeButton("Отмена"){ _, _ ->
@@ -142,9 +135,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 set(Calendar.MILLISECOND, 0)
                 set(Calendar.MINUTE, picker.minute)
                 set(Calendar.HOUR_OF_DAY, picker.hour)
-
                 resultTime = SimpleDateFormat("HH:mm").format(time).toString()
-                context?.let { it1 -> Receiver(it1).setAlarm(timeInMillis, context) }
+                val activity: MainActivity? = activity as MainActivity?
+                val test = activity?.sendActionToBroadcast(timeInMillis, "set")
             }
             setAlarmCard(dateAlarm, resultTime)
         }

@@ -1,4 +1,4 @@
-package com.example.love
+package com.example.love.other.animation
 
 object Constants {
     const val NOTIFICATION_ID = "1"
@@ -10,4 +10,7 @@ object Constants {
     const val SWITCH_ALARM_ID = "7"
     const val VISIBILITY_ALARM_ID = "6"
     const val THEME_ALARM_ID = "5"
+    const val FIRST_START_APP = "4"
+    const val TIME_TO_REPEAT_ALARM = 180000
+    const val PENDING_INTENT_SP = "3"
 }

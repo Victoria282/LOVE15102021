@@ -1,18 +1,12 @@
 package com.example.love.ui.settings
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.love.Constants
-import com.example.love.Constants.THEME_ALARM_ID
+import com.example.love.other.animation.Constants.THEME_ALARM_ID
 import com.example.love.R
 import com.example.love.SharedPreferences.SharedPreferences.customPreference
 import com.example.love.SharedPreferences.SharedPreferences.theme
@@ -20,6 +14,7 @@ import com.example.love.databinding.FragmentSettingsBinding
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
     private lateinit var binding: FragmentSettingsBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,8 +29,7 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         loadSettings()
         with(binding.switchTheme) {
             setOnCheckedChangeListener { _, checked ->
-                isChecked = checked
-                setSettings(isChecked)
+                setSettings(checked)
                 val action = SettingsFragmentDirections.toHome()
                 findNavController().navigate(action)
             }
