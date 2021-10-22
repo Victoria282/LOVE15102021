@@ -1,6 +1,5 @@
 package com.example.love.Service
 
-import android.annotation.SuppressLint
 import android.app.*
 import android.content.Intent
 import android.media.MediaPlayer
@@ -60,6 +59,7 @@ class AlarmService: Service() {
             .setSmallIcon(R.drawable.ic_nights_stay)
             .setContentIntent(pendingIntent)
             .setChannelId(CHANNEL_ID)
+            .setVibrate(pattern)
             .build()
         startForeground(FOREGROUND_ID, notification)
     }
