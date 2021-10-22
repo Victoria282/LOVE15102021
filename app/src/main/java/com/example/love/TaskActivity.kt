@@ -20,6 +20,7 @@ import com.example.love.databinding.ActivityTaskBinding
 import com.example.love.model.TaskDB
 import ru.unit6.course.android.retrofit.utils.Status
 import android.view.Gravity
+import com.example.love.other.Constants.TIME_TO_REPEAT_ALARM
 import com.example.love.other.ObjectPending
 import com.example.love.view_model.MainViewModel
 
@@ -67,7 +68,7 @@ class TaskActivity : AppCompatActivity() {
                         intent.putExtra("alarmInfo", System.currentTimeMillis())
                         val pi = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
                         ObjectPending.globalList.add(pi)
-                        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(System.currentTimeMillis() + 1000 * 60 * 3, pi), pi)
+                        alarmManager.setAlarmClock(AlarmManager.AlarmClockInfo(System.currentTimeMillis() + TIME_TO_REPEAT_ALARM, pi), pi)
                         finishTaskActivity("false")
                     }
                 }
