@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.love.other.animation.Constants.THEME_ALARM_ID
+import com.example.love.other.Constants.THEME_ALARM_ID
 import com.example.love.R
 import com.example.love.SharedPreferences.SharedPreferences.customPreference
 import com.example.love.SharedPreferences.SharedPreferences.theme

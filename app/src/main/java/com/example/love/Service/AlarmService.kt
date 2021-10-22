@@ -5,10 +5,10 @@ import android.content.Intent
 import android.media.MediaPlayer
 import android.os.*
 import androidx.annotation.RequiresApi
-import com.example.love.other.animation.Constants.CHANNEL_ID
-import com.example.love.other.animation.Constants.FOREGROUND_ID
-import com.example.love.other.animation.Constants.NOTIFICATION_CHANNEL_ID
-import com.example.love.other.animation.Constants.NOTIFICATION_ID
+import com.example.love.other.Constants.CHANNEL_ID
+import com.example.love.other.Constants.FOREGROUND_ID
+import com.example.love.other.Constants.NOTIFICATION_CHANNEL_ID
+import com.example.love.other.Constants.NOTIFICATION_ID
 import com.example.love.R
 import com.example.love.TaskActivity
 

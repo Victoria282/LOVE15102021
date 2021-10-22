@@ -20,12 +20,8 @@ import com.example.love.databinding.ActivityTaskBinding
 import com.example.love.model.TaskDB
 import ru.unit6.course.android.retrofit.utils.Status
 import android.view.Gravity
-import com.example.love.SharedPreferences.SharedPreferences.app
-import com.example.love.other.animation.Constants
-import com.example.love.other.animation.ObjectPending
-import com.example.love.other.animation.PrefConfig
+import com.example.love.other.ObjectPending
 import com.example.love.view_model.MainViewModel
-import com.google.gson.annotations.JsonAdapter
 
 class TaskActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTaskBinding

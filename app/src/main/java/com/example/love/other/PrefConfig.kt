@@ -1,4 +1,4 @@
-package com.example.love.other.animation
+package com.example.love.other
 
 import android.app.PendingIntent
 import android.content.Context

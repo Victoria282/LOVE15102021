@@ -1,22 +1,13 @@
 package com.example.love.SharedPreferences
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.content.edit
-import com.example.love.other.animation.Constants.APP_INSTANCE
-import com.example.love.other.animation.Constants.DATE_ALARM_ID
-import com.example.love.other.animation.Constants.OBJ
-import com.example.love.other.animation.Constants.SWITCH_ALARM_ID
-import com.example.love.other.animation.Constants.THEME_ALARM_ID
-import com.example.love.other.animation.Constants.TIME_ALARM_ID
-import com.example.love.other.animation.Constants.VISIBILITY_ALARM_ID
-import com.example.love.other.animation.ObjectPending
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import okhttp3.internal.cache2.Relay.Companion.edit
-import okhttp3.internal.concurrent.Task
-import java.io.IOException
+import com.example.love.other.Constants.APP_INSTANCE
+import com.example.love.other.Constants.DATE_ALARM_ID
+import com.example.love.other.Constants.SWITCH_ALARM_ID
+import com.example.love.other.Constants.THEME_ALARM_ID
+import com.example.love.other.Constants.TIME_ALARM_ID
+import com.example.love.other.Constants.VISIBILITY_ALARM_ID
 
 object SharedPreferences {
     fun customPreference(context: Context, name: String): SharedPreferences = context.

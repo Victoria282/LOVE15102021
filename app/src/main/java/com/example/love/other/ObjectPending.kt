@@ -1,4 +1,4 @@
-package com.example.love.other.animation
+package com.example.love.other
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent

@@ -1,4 +1,4 @@
-package com.example.love.other.animation
+package com.example.love.other
 
 object Constants {
     const val NOTIFICATION_ID = "1"

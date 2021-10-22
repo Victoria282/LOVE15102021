@@ -15,10 +15,7 @@ import com.example.love.BroadcastReceiver.BroadcastReceiver
 import com.example.love.Service.AlarmService
 import com.example.love.database.AppDatabase
 import com.example.love.databinding.ActivityMainBinding
-import com.example.love.other.animation.ObjectPending
-import com.example.love.other.animation.PrefConfig
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.example.love.other.ObjectPending
 
 class MainActivity : AppCompatActivity() {
 
